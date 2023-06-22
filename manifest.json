@@ -2,11 +2,18 @@
   "manifest_version": 2,
   "name": "Old Blackboard",
   "version": "1.0",
+  "permissions": ["webRequest", "webRequestBlocking"],
   "content_scripts": [
     {
-      "matches": ["http://learn.uq.edu.au/webapps/portal/execute/tabs/tabAction?tab_tab_group_id=_1_1", "https://learn.uq.edu.au/webapps/portal/execute/tabs/tabAction?tab_tab_group_id=_1_1"],
-      "js": ["Code/content.js"],
+      "matches": ["https://learn.uq.edu.au/webapps/*"],
+      "js": ["code/navigation.js"],
+      "css": ["code/styles/navigation.css"],
       "run_at": "document_end"
+    },
+    {
+      "matches": ["https://learn.uq.edu.au/"],
+      "js": ["code/redirect.js"],
+      "run_at": "document_start"
     }
   ]
 }
