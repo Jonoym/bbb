@@ -1,0 +1,12 @@
+{
+  "manifest_version": 2,
+  "name": "Old Blackboard",
+  "version": "1.0",
+  "content_scripts": [
+    {
+      "matches": ["http://learn.uq.edu.au/webapps/portal/execute/tabs/tabAction?tab_tab_group_id=_1_1", "https://learn.uq.edu.au/webapps/portal/execute/tabs/tabAction?tab_tab_group_id=_1_1"],
+      "js": ["Code/content.js"],
+      "run_at": "document_end"
+    }
+  ]
+}
