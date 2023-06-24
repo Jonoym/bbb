@@ -6,8 +6,8 @@
   "content_scripts": [
     {
       "matches": ["https://learn.uq.edu.au/webapps/*"],
-      "js": ["code/navigation.js"],
-      "css": ["code/styles/navigation.css"],
+      "js": ["code/content.js"],
+      "css": ["code/styles.css"],
       "run_at": "document_end"
     },
     {
