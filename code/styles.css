@@ -1,17 +1,65 @@
 .injected-background {
-    background-color: #502479 !important;
+    background-color: #333333 !important;
+    height: 160px !important;
+    padding: 0px !important;
 }
 
 .injected-link {
     color: #fff !important;
+    font-size: 14px !important;
+}
+
+.injected-logo {
+    height: 100px !important;
+    margin: 20px;
+}
+
+.injected-levelled {
+    display: flex;
+    align-items: center;
+}
+
+.injected-header-options {
+    display: flex;
+    height: 100%;
+    align-items: flex-end;
+}
+
+.injected-page-options {
+    display: flex !important;
+}
+
+.injected-header-option {
+    height: 100px;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    margin: 0px !important;
+    padding: 20px !important;
+    padding-bottom: 4px !important;
+}
+
+.injected-option-active {
+    padding-bottom: 0px !important;
+    border-bottom: 4px solid #c56fd5;
+}
+
+.injected-option-inactive {
+    color: #BBBBBB !important;
 }
 
 .injected-courses {
     color: #fff !important;
 }
 
+.injected-remove-margin {
+    margin: 0px !important;
+    padding: 0px !important;
+}
+
 .injected-separator {
     width: 100%;
+    height: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -19,4 +67,15 @@
 
 .injected-red {
     color: red !important;
+}
+
+.injected-list-header {
+    background-color: #6a2885 !important;
+    border-top: none !important;
+    color: #fff !important;
+}
+
+.injected-course-list-container {
+    margin: 10px;
+    border: 1px solid #BBBBBB !important;
 }

@@ -11,7 +11,7 @@
       "run_at": "document_end"
     },
     {
-      "matches": ["https://learn.uq.edu.au/"],
+      "matches": ["https://learn.uq.edu.au/ultra/course", "https://learn.uq.edu.au/ultra"],
       "js": ["code/redirect.js"],
       "run_at": "document_start"
     }
