@@ -35,21 +35,28 @@ const parseCourseData = (results) => {
 }
 
 const storeCurrentCourses = (semesters) => {
-    if (semesters.length < 1) return false;
+    if (semesters.length < 1) return;
 
     const date = new Date();
     const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
 
-    if (formattedDate === localStorage.getItem("updated_at")) return false;
+    if (formattedDate === localStorage.getItem("updated_at") && localStorage.getItem("courses") !== null) return;
+
+    const filteredCourses = [];
+
+    for (const course of semesters[0]) {
+        filteredCourses.push({
+            id: course.id,
+            code: course.code
+        })
+    }
 
     localStorage.setItem("updated_at", formattedDate);
-    localStorage.setItem("courses", JSON.stringify(semesters[0]));
-
-    return true;
+    localStorage.setItem("courses", JSON.stringify(filteredCourses));
 }
 
 /**
- * Navigation Header containing Course Search and Useful Links
+ * Injects the Navigation Bar into every page
  */
 const injectNavigationBar = () => {
     const existingElement = document.getElementById('injected-navigation-bar');
@@ -123,16 +130,20 @@ const injectNavigationBar = () => {
     body.insertBefore(navigationElement, body.firstChild);
 }
 
+/**
+ * Creates the options of the Navigation Bar for all the courses in the Current semester
+ * 
+ * @returns an HTML String for a list of all Courses in the Current Semester
+ */
 const createCourseLinks = (courses) => {
     let element = '';
-
     const searchParams = location.search;
 
     for (const course of courses) {
         const isActive = searchParams.search(course.id) !== -1;
         element += 
         `<li class="${isActive ? "root" : "placeholder"} injected-header-option ${isActive ? "injected-option-active" : ""}">
-            <a class="injected-remove-margin" href="${course.url}" title="${course.code}">
+            <a class="injected-remove-margin" href="/webapps/blackboard/execute/courseMain?course_id=${course.id}" title="${course.code}">
                 <span class="courseName injected-link ${isActive ? "" : "injected-option-inactive"}">
                     ${course.code}
                 </span>
@@ -145,10 +156,13 @@ const createCourseLinks = (courses) => {
 }
 
 /**
- * Course List 
+ * Injects the Course List into the Homepage
  */
 const injectCourseList = (semesters) => {
     const parentElement = document.getElementById('column1');
+
+    if (parentElement === null) return;
+
     const courseListElement = document.createElement('div');
     const semesterElement = createSemesterElement(semesters);
     
@@ -165,15 +179,19 @@ const injectCourseList = (semesters) => {
 
     <div class="injected-course-list-container" style="overflow: auto; aria-expanded=" true"="" id="Tools_Tools">
             ${semesterElement}
-
     </div>`
     
     courseListElement.className = 'portlet clearfix reorderableModule';
-    courseListElement.id = 'module:_48_2';
+    courseListElement.id = "module_1_48:2"
     courseListElement.innerHTML = courseList;
     parentElement.insertBefore(courseListElement, parentElement.firstChild);
 }
 
+/**
+ * Creates the HTML String to be inserted the Course List tab of the Homepage
+ * 
+ * @returns an HTML String for the entire Course List including all semesters
+ */
 const createSemesterElement = (semesters) => {
     let element = '';
 
@@ -193,6 +211,11 @@ const createSemesterElement = (semesters) => {
     return element;
 }
 
+/**
+ * Creates an HTML String to be inserted for a group of courses to be inserted into the Course List tab of the Homepage.
+ *  
+ * @returns an HTML String for a list of Courses within a group (Grouped by Semester).
+ */
 const createCourseElements = (courseList) => {
     let element = '';
 
@@ -208,31 +231,44 @@ const createCourseElements = (courseList) => {
     return element;
 }
 
-const existingElement = document.getElementById('injected-navigation-bar');
-if (existingElement === null) {
-    injectNavigationBar()
-} 
-
-if (window.location.pathname === HOMEPAGE) {
+/**
+ * Asynchronous call to obtain user information, this provides the Account ID to fetch courses.
+ */
+const updateUserId = () => {
     fetch(USER_INFO_URL)
         .then(response => response.json())
-        .then(data => {
-            const id = data.id;
-            fetch(`https://learn.uq.edu.au/learn/api/v1/users/${id}/memberships?expand=course.effectiveAvailability,course.permissions,courseRole&includeCount=true&limit=10000`)
-                .then(response => response.json())
-                .then(data => {
-                    const semesters = parseCourseData(data.results);
-                    const updated = storeCurrentCourses(semesters);
-                    injectCourseList(semesters);
-                    if (updated) {
-                        injectNavigationBar();
-                    }
+            .then(data => {
+                localStorage.setItem("user_id", data.id);
+                console.log(data);
+                fetchCourseData()
             })
-                .catch(error => {
-                    console.error('Error:', error);
-            });
-    })
-        .catch(error => {
-            console.error('Error:', error);
+            .catch(error => {
+                console.error('Error:', error);
     });
+}
+
+/**
+ * Fetches Course data for an Account to populate the Course List and Navigation bar.
+ */
+const fetchCourseData = () => {
+    if (window.location.pathname === HOMEPAGE || localStorage.getItem("courses") === null) {
+        fetch(`https://learn.uq.edu.au/learn/api/v1/users/${localStorage.getItem("user_id")}/memberships?expand=course.effectiveAvailability,course.permissions,courseRole&includeCount=true&limit=10000`)
+        .then(response => response.json())
+            .then(data => {
+                const semesters = parseCourseData(data.results);
+                storeCurrentCourses(semesters);
+                injectCourseList(semesters);
+                injectNavigationBar();
+        })
+            .catch(error => {   
+                console.error('Error:', error);
+        })
+    }
+}
+
+injectNavigationBar();
+if (localStorage.getItem("user_id") === null) {
+    updateUserId();
+} else {
+    fetchCourseData();
 }

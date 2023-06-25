@@ -1,8 +1,8 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "Old Blackboard",
+  "description": "Reverts Blackboard back to the old UI",
   "version": "1.0",
-  "permissions": ["webRequest", "webRequestBlocking"],
   "content_scripts": [
     {
       "matches": ["https://learn.uq.edu.au/webapps/*"],
@@ -15,5 +15,8 @@
       "js": ["code/redirect.js"],
       "run_at": "document_start"
     }
-  ]
+  ],
+  "icons": {
+    "128": "128.png"
+  }
 }
